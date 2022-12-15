@@ -1,6 +1,6 @@
 import argparse
 import os
-from gallery_synchronizer import GallerySynchronizer, is_gallery_path
+from gallery_synchronizer import GallerySynchronizer, synchronize_gallery
 
 # Function definitions
 def get_absolute_path(input):
@@ -23,8 +23,6 @@ parser.add_argument("-i", "--input", required=True, type=str,
 cmd_args = parser.parse_args()
 abs_path = get_absolute_path(cmd_args.input)
 
-if is_gallery_path(abs_path):
-   gallery_sync = GallerySynchronizer(abs_path)
-   gallery_sync.synchronize()
+synchronize_gallery(abs_path)
 
 
