@@ -4,5 +4,5 @@ class GalleryImageElement:
   def __init__(self, image_name):
       None # TODO
 
-  def create(self, Element):
+  def create(self):
       None # TODO
