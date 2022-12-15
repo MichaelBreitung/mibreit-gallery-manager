@@ -3,6 +3,8 @@ import os
 from gallery_synchronizer import GallerySynchronizer, synchronize_gallery
 
 # Function definitions
+
+
 def get_absolute_path(input):
     gallery_path = os.path.normcase(input)
 
@@ -15,6 +17,7 @@ def get_absolute_path(input):
 
     return gallery_path
 
+
 # Start of Main Program
 parser = argparse.ArgumentParser("mibreit-gallery-manager")
 parser.add_argument("-i", "--input", required=True, type=str,
@@ -23,6 +26,5 @@ parser.add_argument("-i", "--input", required=True, type=str,
 cmd_args = parser.parse_args()
 abs_path = get_absolute_path(cmd_args.input)
 
+# TODO Recursion across all galleries inside of a given folder
 synchronize_gallery(abs_path)
-
-

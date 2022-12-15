@@ -1,7 +1,7 @@
 from os import path, remove
 import xml.etree.ElementTree as XmlEt
 from gallery_tools import get_list_of_supported_images_in_folder
-from gallery_configuration import GALLERY_XML_IMAGES_TAG, REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, GALLERY_XML_IMAGES_FILENAMW_TAG
+from gallery_configuration import GALLERY_XML_IMAGES_TAG, REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, GALLERY_XML_IMAGES_FILENAME_TAG
 from gallery_image_element import GalleryImageElement
 
 
@@ -25,11 +25,11 @@ class GalleryXmlUpdater:
             return self.__xml_gallery_tree.getroot().find(GALLERY_XML_IMAGES_TAG) is not None
         except Exception as inst:
             print(
-                f"Exception: parsing of {REQUIRED_GALLERY_FILE_GALLERY} failed for {self.__gallery_path}\n{inst}")
+                f"Exception: parsing of {REQUIRED_GALLERY_FILE_GALLERY} failed for {self.__gallery_xml_path}\n{inst}")
             return False
 
     def __extract_filename_from_xml_image_element(self, element: XmlEt.ElementTree):
-        return element.find(GALLERY_XML_IMAGES_FILENAMW_TAG).text
+        return element.find(GALLERY_XML_IMAGES_FILENAME_TAG).text
 
     def __get_list_of_images_from_gallery(self):
         xmlImages = map(self.__extract_filename_from_xml_image_element,
@@ -65,9 +65,9 @@ class GalleryXmlUpdater:
                 response = input(
                     f"Shall it instead be created inside {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
                 if response in ("yes", "y"):
-                    new_xml_image_element = GalleryImageElement(image_name, )
-                    xml_images_element.insert(
-                        0, new_xml_image_element.create(xml_images_element))
+                    new_xml_image_element = GalleryImageElement(
+                        image_name).create()
+                    xml_images_element.insert(0, new_xml_image_element)
 
     def update(self):
         if self.__parse_gallery_xml() == True:
@@ -77,6 +77,7 @@ class GalleryXmlUpdater:
             superfluous_gallery_elements = self.__images_in_gallery_set - self.__images_set
             self.__synchronize_gallery_elements(
                 missing_gallery_elements, superfluous_gallery_elements)
+            XmlEt.indent(self.__xml_gallery_tree.getroot())
             self.__xml_gallery_tree.write(self.__gallery_xml_path)
             return True
         else:
