@@ -20,13 +20,13 @@ class GalleryImageElement:
             GALLERY_XML_IMAGES_FILENAME_TAG)
         xml_filename.text = self.__image_name
 
-        caption = input(f"Please provide a caption: ")
+        caption = input(f"-> Please provide a caption: ")
         xml_caption = new_xml_image_element.find(
             GALLERY_XML_IMAGES_CAPTION_TAG)
         xml_caption.text = caption
 
         size = input(
-            f"Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
+            f"-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
         xml_prints = new_xml_image_element.find(
             GALLERY_XML_IMAGES_PRINTS_TAG)
         if size == "1":

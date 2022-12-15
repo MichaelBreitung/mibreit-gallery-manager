@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/gallery_manager.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["-i", "./cornwall"]
+      "args": ["-i", "./test"]
     }
   ]
 }

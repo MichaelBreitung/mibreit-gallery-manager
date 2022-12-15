@@ -47,23 +47,25 @@ class GalleryXmlUpdater:
             image_name = self.__extract_filename_from_xml_image_element(
                 xml_image_element)
             if image_name in superfluous_gallery_elements:
+                print(f"\n{image_name}:")
                 response = input(
-                    f"The image {image_name} is present in {REQUIRED_GALLERY_FILE_GALLERY}, but not in {REQUIRED_GALLERY_FOLDER_IMAGES}. Shall it be removed from {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
+                    f"-> Image is present in {REQUIRED_GALLERY_FILE_GALLERY}, but not in {REQUIRED_GALLERY_FOLDER_IMAGES}. Shall it be removed from {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
                 if response in ("yes", "y"):
                     print(
-                        f"Removing image {image_name} from {REQUIRED_GALLERY_FILE_GALLERY}")
+                        f"-> Removing image {image_name} from {REQUIRED_GALLERY_FILE_GALLERY}")
                     xml_images_element.remove(xml_image_element)
         # check for images to remove from images folder
         for image_name in missing_gallery_elements:
+            print(f"\n{image_name}:")
             response = input(
-                f"The image {image_name} is present in {REQUIRED_GALLERY_FOLDER_IMAGES}, but not in {REQUIRED_GALLERY_FILE_GALLERY}. Shall it be removed from {REQUIRED_GALLERY_FOLDER_IMAGES}? (yes/no) ")
+                f"-> Image is present in {REQUIRED_GALLERY_FOLDER_IMAGES}, but not in {REQUIRED_GALLERY_FILE_GALLERY}. Shall it be removed from {REQUIRED_GALLERY_FOLDER_IMAGES}? (yes/no) ")
             if response in ("yes", "y"):
                 print(
-                    f"Removing image {image_name} from {REQUIRED_GALLERY_FOLDER_IMAGES}")
+                    f"-> Removing image {image_name} from {REQUIRED_GALLERY_FOLDER_IMAGES}")
                 remove(path.join(self.__images_path, image_name))
             else:
                 response = input(
-                    f"Shall it instead be created inside {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
+                    f"-> Shall it instead be created inside {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
                 if response in ("yes", "y"):
                     new_xml_image_element = GalleryImageElement(
                         image_name).create()

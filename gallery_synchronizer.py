@@ -2,10 +2,7 @@ from os import path, listdir
 from gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, REQUIRED_GALLERY_FOLDER_SMALL, REQUIRED_GALLERY_ELEMENTS
 from gallery_thumb_updater import GalleryThumbUpdater
 from gallery_xml_updater import GalleryXmlUpdater
-
-
-def is_gallery_path(path):
-    return REQUIRED_GALLERY_ELEMENTS <= set(listdir(path))
+from gallery_tools import is_gallery_path
 
 
 def synchronize_gallery(path):
@@ -29,6 +26,7 @@ class GallerySynchronizer:
             self.__gallery_path, REQUIRED_GALLERY_FILE_GALLERY)
 
     def synchronize(self):
+        print("\nSynchronizing gallery -> ", self.__gallery_path)
         if GalleryXmlUpdater(self.__images_path, self.__gallery_xml_path).update() is True:
             GalleryThumbUpdater(self.__images_path,
                                 self.__thumbs_path).update()

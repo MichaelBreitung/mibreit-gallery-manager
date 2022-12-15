@@ -20,7 +20,7 @@ class GalleryThumbUpdater:
 
     def __create_missing_thumbs(self, missing_thumbs_set):
         for thumb_name in missing_thumbs_set:
-            print(f"Creating missing thumb -> {thumb_name}")
+            print(f"\n{thumb_name}: Creating missing thumb")
             thumb = Image.open(path.join(
                 self.__images_path, thumb_name)).copy()
             thumb.thumbnail(THUMBNAIL_SIZE, Image.LANCZOS)
@@ -30,7 +30,7 @@ class GalleryThumbUpdater:
 
     def __remove_superfluous_thumbs(self, superfluous_thumbs_list):
         for thumb_name in superfluous_thumbs_list:
-            print(f"Removing superfluous thumb -> {thumb_name}")
+            print(f"\n{thumb_name}: Removing superfluous thumb")
             remove(path.join(self.__thumbs_path, thumb_name))
 
     def update(self):

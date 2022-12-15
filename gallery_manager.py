@@ -1,11 +1,12 @@
 import argparse
 import os
 from gallery_synchronizer import GallerySynchronizer, synchronize_gallery
+from gallery_tools import is_gallery_path
 
 # Function definitions
 
 
-def get_absolute_path(input):
+def get_valid_path(input):
     gallery_path = os.path.normcase(input)
 
     if not os.path.isdir(gallery_path):
@@ -24,7 +25,15 @@ parser.add_argument("-i", "--input", required=True, type=str,
                     help="The folder in which the galleries are located. Recursion will be used to find all individual galleries.")
 
 cmd_args = parser.parse_args()
-abs_path = get_absolute_path(cmd_args.input)
+path = get_valid_path(cmd_args.input)
 
 # TODO Recursion across all galleries inside of a given folder
-synchronize_gallery(abs_path)
+def synchronize_galleries_in_folder(folder):
+    if is_gallery_path(folder):
+        synchronize_gallery(folder)
+    else:
+        for it in os.scandir(folder):
+            if it.is_dir():
+                synchronize_galleries_in_folder(os.path.join(it.path))
+
+synchronize_galleries_in_folder(path)
