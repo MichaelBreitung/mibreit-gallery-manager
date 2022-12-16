@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as XmlEt
-from gallery_configuration import GALLERY_XML_IMAGES_FILENAME_TAG, GALLERY_XML_IMAGES_CAPTION_TAG, GALLERY_XML_IMAGES_PRINTS_TAG
+from .gallery_configuration import GALLERY_XML_IMAGES_FILENAME_TAG, GALLERY_XML_IMAGES_CAPTION_TAG, GALLERY_XML_IMAGES_PRINTS_TAG
 
 image_element_blueprint = '''<image>
 <filename></filename>

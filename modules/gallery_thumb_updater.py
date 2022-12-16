@@ -1,7 +1,7 @@
 from os import path, remove
 from PIL import Image, ImageEnhance
-from gallery_tools import get_list_of_supported_images_in_folder
-from gallery_configuration import THUMB_QUALITY, THUMB_SHARPEN_FACTOR, THUMBNAIL_SIZE
+from .gallery_tools import get_list_of_supported_images_in_folder
+from .gallery_configuration import THUMB_QUALITY, THUMB_SHARPEN_FACTOR, THUMBNAIL_SIZE
 
 
 class GalleryThumbUpdater:

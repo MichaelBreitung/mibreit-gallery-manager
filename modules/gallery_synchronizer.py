@@ -1,8 +1,8 @@
-from os import path, listdir
-from gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, REQUIRED_GALLERY_FOLDER_SMALL, REQUIRED_GALLERY_ELEMENTS
-from gallery_thumb_updater import GalleryThumbUpdater
-from gallery_xml_updater import GalleryXmlUpdater
-from gallery_tools import is_gallery_path
+from os import path
+from .gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, REQUIRED_GALLERY_FOLDER_SMALL, REQUIRED_GALLERY_ELEMENTS
+from .gallery_thumb_updater import GalleryThumbUpdater
+from .gallery_xml_updater import GalleryXmlUpdater
+from .gallery_tools import is_gallery_path
 
 
 def synchronize_gallery(path):

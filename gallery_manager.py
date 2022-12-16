@@ -1,7 +1,7 @@
 import argparse
 import os
-from gallery_synchronizer import GallerySynchronizer, synchronize_gallery
-from gallery_tools import is_gallery_path
+from modules.gallery_synchronizer import synchronize_gallery
+from modules.gallery_tools import is_gallery_path
 
 # Function definitions
 

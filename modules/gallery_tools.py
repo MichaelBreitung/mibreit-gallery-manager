@@ -1,5 +1,5 @@
 from os import listdir
-from gallery_configuration import REQUIRED_GALLERY_ELEMENTS
+from .gallery_configuration import REQUIRED_GALLERY_ELEMENTS
 
 SUPPORTED_IMAGE_FORMATS = (".jpg", ".jpeg")
 

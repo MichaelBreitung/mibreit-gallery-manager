@@ -1,8 +1,8 @@
 from os import path, remove
 import xml.etree.ElementTree as XmlEt
-from gallery_tools import get_list_of_supported_images_in_folder
-from gallery_configuration import GALLERY_XML_IMAGES_TAG, REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, GALLERY_XML_IMAGES_FILENAME_TAG
-from gallery_image_element import GalleryImageElement
+from .gallery_tools import get_list_of_supported_images_in_folder
+from .gallery_configuration import GALLERY_XML_IMAGES_TAG, REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, GALLERY_XML_IMAGES_FILENAME_TAG
+from .gallery_image_element import GalleryImageElement
 
 
 class GalleryXmlUpdater:
