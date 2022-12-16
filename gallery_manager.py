@@ -23,7 +23,7 @@ def synchronize_galleries_in_folder(folder):
     else:
         for it in os.scandir(folder):
             if it.is_dir():
-                synchronize_galleries_in_folder(os.path.join(it.path))
+                synchronize_galleries_in_folder(it.path)
 
 
 # Start of Main Program
