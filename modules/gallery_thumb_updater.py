@@ -1,37 +1,31 @@
-from os import path, remove
-from PIL import Image, ImageEnhance
+import os
 from .gallery_tools import get_list_of_supported_images_in_folder
-from .gallery_configuration import THUMB_QUALITY, THUMB_SHARPEN_FACTOR, THUMBNAIL_SIZE
+from .gallery_thumb_creator import GalleryThumbCreator
 
 
 class GalleryThumbUpdater:
-    __images_path = None
+    __thumb_creator = None
     __images_set = None
     __thumbs_path = None
     __thumbs_set = None
 
     def __init__(self, images_path, thumbs_path):
-        self.__images_path = images_path
-        self.__images_set = set(get_list_of_supported_images_in_folder(
-            images_path))
+        self.__thumb_creator = GalleryThumbCreator(images_path, thumbs_path)
+        images_list = get_list_of_supported_images_in_folder(images_path)
+        thumbs_list = get_list_of_supported_images_in_folder(thumbs_path)
+        self.__images_set = set(images_list)
         self.__thumbs_path = thumbs_path
-        self.__thumbs_set = set(get_list_of_supported_images_in_folder(
-            thumbs_path))
+        self.__thumbs_set = set(thumbs_list)
 
     def __create_missing_thumbs(self, missing_thumbs_set):
         for thumb_name in missing_thumbs_set:
             print(f"\n{thumb_name}: Creating missing thumb")
-            thumb = Image.open(path.join(
-                self.__images_path, thumb_name)).copy()
-            thumb.thumbnail(THUMBNAIL_SIZE, Image.LANCZOS)
-            thumb = ImageEnhance.Sharpness(thumb).enhance(THUMB_SHARPEN_FACTOR)
-            thumb.save(path.join(self.__thumbs_path,
-                       thumb_name), quality=THUMB_QUALITY)
+            self.__thumb_creator.create(thumb_name)
 
     def __remove_superfluous_thumbs(self, superfluous_thumbs_list):
         for thumb_name in superfluous_thumbs_list:
             print(f"\n{thumb_name}: Removing superfluous thumb")
-            remove(path.join(self.__thumbs_path, thumb_name))
+            os.remove(os.path.join(self.__thumbs_path, thumb_name))
 
     def update(self):
         missing_thumbs_set = self.__images_set - self.__thumbs_set

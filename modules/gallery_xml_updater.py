@@ -67,8 +67,10 @@ class GalleryXmlUpdater:
                 response = input(
                     f"-> Shall it instead be created inside {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
                 if response in ("yes", "y"):
+                    caption = input(f"-> Please provide a caption: ")
+                    size = input(f"-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
                     new_xml_image_element = GalleryImageElement(
-                        image_name).create()
+                        image_name, caption, size).create()
                     xml_images_element.insert(0, new_xml_image_element)
 
     def update(self):
