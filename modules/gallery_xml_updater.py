@@ -40,8 +40,15 @@ class GalleryXmlUpdater:
         self.__images_in_gallery_set = set(
             self.__get_list_of_images_from_gallery())
 
+    def __select_image_position(self, xml_images_element):
+        for i, xml_image_element in enumerate(xml_images_element):
+            print(
+                f"  [{i}] - {self.__extract_filename_from_xml_image_element(xml_image_element)}")
+        return int(input(f"-> At which index shall the image be inserted? "))
+
     def __synchronize_gallery_elements(self, missing_gallery_elements, superfluous_gallery_elements):
         xml_images_element = self.__xml_gallery_tree.getroot().find(GALLERY_XML_IMAGES_TAG)
+        xml_image_elements_to_remove = []
         # check for images to remove from gallery
         for xml_image_element in xml_images_element:
             image_name = self.__extract_filename_from_xml_image_element(
@@ -53,7 +60,11 @@ class GalleryXmlUpdater:
                 if response in ("yes", "y"):
                     print(
                         f"-> Removing image {image_name} from {REQUIRED_GALLERY_FILE_GALLERY}")
-                    xml_images_element.remove(xml_image_element)
+                    xml_image_elements_to_remove.append(xml_image_element)
+
+        for xml_image_element in xml_image_elements_to_remove:
+            xml_images_element.remove(xml_image_element)
+
         # check for images to remove from images folder
         for image_name in missing_gallery_elements:
             print(f"\n{image_name}:")
@@ -68,10 +79,14 @@ class GalleryXmlUpdater:
                     f"-> Shall it instead be created inside {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
                 if response in ("yes", "y"):
                     caption = input(f"-> Please provide a caption: ")
-                    size = input(f"-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
+                    alt = input(f"-> Please provide a description: ")
+                    altGer = input(f"-> Please provide a german description: ")
+                    size = input(
+                        f"-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
+                    index = self.__select_image_position(xml_images_element)
                     new_xml_image_element = GalleryImageElement(
-                        image_name, caption, size).create()
-                    xml_images_element.insert(0, new_xml_image_element)
+                        image_name, caption, alt, altGer, size).create()
+                    xml_images_element.insert(index, new_xml_image_element)
 
     def update(self):
         if self.__parse_gallery_xml() == True:
@@ -79,6 +94,7 @@ class GalleryXmlUpdater:
 
             missing_gallery_elements = self.__images_set - self.__images_in_gallery_set
             superfluous_gallery_elements = self.__images_in_gallery_set - self.__images_set
+
             self.__synchronize_gallery_elements(
                 missing_gallery_elements, superfluous_gallery_elements)
             XmlEt.indent(self.__xml_gallery_tree.getroot())
