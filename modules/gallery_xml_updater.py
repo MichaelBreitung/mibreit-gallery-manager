@@ -3,6 +3,7 @@ import xml.etree.ElementTree as XmlEt
 from .gallery_tools import get_list_of_supported_images_in_folder
 from .gallery_configuration import GALLERY_XML_IMAGES_TAG, REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, GALLERY_XML_IMAGES_FILENAME_TAG
 from .gallery_image_element import GalleryImageElement
+from .gallery_tools import parse_gallery_xml
 
 
 class GalleryXmlUpdater:
@@ -17,16 +18,6 @@ class GalleryXmlUpdater:
         self.__gallery_xml_path = gallery_xml_path
         self.__images_set = self.__images_set = set(get_list_of_supported_images_in_folder(
             images_path))
-
-    def __parse_gallery_xml(self):
-        try:
-            self.__xml_gallery_tree = XmlEt.parse(self.__gallery_xml_path)
-            # making the following check will ensure that other methods in this class work properly
-            return self.__xml_gallery_tree.getroot().find(GALLERY_XML_IMAGES_TAG) is not None
-        except Exception as inst:
-            print(
-                f"Exception: parsing of {REQUIRED_GALLERY_FILE_GALLERY} failed for {self.__gallery_xml_path}\n{inst}")
-            return False
 
     def __extract_filename_from_xml_image_element(self, element: XmlEt.ElementTree):
         return element.find(GALLERY_XML_IMAGES_FILENAME_TAG).text
@@ -89,7 +80,8 @@ class GalleryXmlUpdater:
                     xml_images_element.insert(index, new_xml_image_element)
 
     def update(self):
-        if self.__parse_gallery_xml() == True:
+        self.__xml_gallery_tree = parse_gallery_xml(self.__gallery_xml_path)
+        if self.__xml_gallery_tree != None:
             self.__update_gallery_images_set()
 
             missing_gallery_elements = self.__images_set - self.__images_in_gallery_set
