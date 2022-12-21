@@ -11,3 +11,16 @@ Python (Version 3.11) must be installed on system. Then you can use *pip install
 ## Usage
 
 Call *python gallery_manager.py -i **path to galleries*** for the script to traverse all contained gallery folders and prompt you for new images that have been added or for images that have been removed.
+
+## Unit Testing
+
+This package includes unit tests. The following commands will be helpful:
+
+- runs the unit tests 
+``python -m unittest``
+
+- tests the coverage of the unit tests
+``python -m coverage run -m unittest``
+
+- called after the previous command, it creates a report showing the coverage
+``python -m coverage report``

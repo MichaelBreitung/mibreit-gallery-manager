@@ -1,45 +1,68 @@
+"""Module used to parse command line arguments"""
 import argparse
 import os
-from modules.gallery_synchronizer import synchronize_gallery
-from modules.gallery_image_descriptions import update_image_descriptions
-from modules.gallery_tools import is_gallery_path
+from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_path, get_thumbs_path, \
+    update_image_exif_data
+from modules.gallery_xml_tools import parse_gallery_xml, update_image_descriptions, get_images_element, \
+    write_formatted_xml, read_gallery_xml
+from modules.gallery_xml_updater import *
+from modules.gallery_thumb_updater import *
 
 
-def get_valid_path(input):
-    gallery_path = os.path.normcase(input)
+def synchronize_gallery(folder: str):
+    print("\nSynchronizing gallery -> ", folder)
+    images_path = get_images_path(folder)
+    thumbs_path = get_thumbs_path(folder)
 
-    if not os.path.isdir(gallery_path):
-        gallery_path = os.path.normpath(
-            os.path.join(os.getcwd(), gallery_path))
-
-    if not os.path.isdir(gallery_path):
-        raise ValueError(f"Invalid Input: {input}")
-
-    return gallery_path
+    if GalleryXmlUpdater(images_path, folder).update() is True:
+        GalleryThumbUpdater(images_path, thumbs_path).update()
+    else:
+        print(
+            f"Invalid Gallery under {path}. The {REQUIRED_GALLERY_FILE_GALLERY} is invalid.")
 
 
-def synchronize_galleries_in_folder(folder):
+def synchronize_galleries_in_folder(folder: str) -> None:
     if is_gallery_path(folder):
         synchronize_gallery(folder)
     else:
-        for it in os.scandir(folder):
-            if it.is_dir():
-                synchronize_galleries_in_folder(it.path)
+        for folder_element in os.scandir(folder):
+            if folder_element.is_dir():
+                synchronize_galleries_in_folder(folder_element.path)
 
-def update_image_descriptions_in_folder(folder):
+
+def update_image_descriptions_in_folder(folder: str) -> None:
     if is_gallery_path(folder):
-        update_image_descriptions(folder)
+        print("\nUpdating image descriptions in gallery -> ", folder)
+        xml_data = read_gallery_xml(folder)
+        xml_gallery_tree = parse_gallery_xml(xml_data)
+        if xml_gallery_tree is not None:
+            images_element = get_images_element(xml_gallery_tree)
+
+            def update_image_callback(image_name, image_description):
+                update_image_exif_data(get_images_path(
+                    folder), image_name, image_description)
+
+            update_image_descriptions(images_element, update_image_callback)
+
+            write_formatted_xml(xml_gallery_tree, folder)
+        else:
+            print(f"Exception: parsing of {REQUIRED_GALLERY_FILE_GALLERY} failed for \
+                {folder}")
     else:
-        for it in os.scandir(folder):
-            if it.is_dir():
-                update_image_descriptions_in_folder(it.path) 
+        for folder_element in os.scandir(folder):
+            if folder_element.is_dir():
+                update_image_descriptions_in_folder(folder_element.path)
 
 
 # Start of Main Program
 parser = argparse.ArgumentParser("mibreit-gallery-manager")
 parser.add_argument("-i", "--input", required=True, type=str,
-                    help="The folder in which the galleries are located. Recursion will be used to find all individual galleries.")
-parser.add_argument("-d", "--description", default=False, action=argparse.BooleanOptionalAction, help="Add this flag, to update the descriptions of the photos within the input galleries.")
+                    help="The folder in which the galleries are located. \
+                        Recursion will be used to find all individual galleries.")
+parser.add_argument("-d", "--description", default=False,
+                    action=argparse.BooleanOptionalAction,
+                    help="Add this flag, to update the descriptions of the photos \
+                        within the input galleries.")
 
 cmd_args = parser.parse_args()
 path = get_valid_path(cmd_args.input)

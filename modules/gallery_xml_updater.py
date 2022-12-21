@@ -1,49 +1,29 @@
 from os import path, remove
-import xml.etree.ElementTree as XmlEt
 from .gallery_tools import get_list_of_supported_images_in_folder
-from .gallery_configuration import GALLERY_XML_IMAGES_TAG, REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_FOLDER_IMAGES, GALLERY_XML_IMAGES_FILENAME_TAG
-from .gallery_image_element import GalleryImageElement
-from .gallery_tools import parse_gallery_xml
+from .gallery_xml_tools import extract_filename_from_image_element, read_gallery_xml, parse_gallery_xml, \
+    print_images_list, create_image_element, write_formatted_xml, get_image_element_filenames_list, get_images_element
+from .gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, \
+    REQUIRED_GALLERY_FOLDER_IMAGES
 
 
 class GalleryXmlUpdater:
     __images_path = None
     __images_set = None
-    __gallery_xml_path = None
-    __images_in_gallery_set = None
+    __gallery_path = None
     __xml_gallery_tree = None
 
-    def __init__(self, images_path, gallery_xml_path):
+    def __init__(self, images_path, gallery_path):
         self.__images_path = images_path
-        self.__gallery_xml_path = gallery_xml_path
+        self.__gallery_path = gallery_path
         self.__images_set = self.__images_set = set(get_list_of_supported_images_in_folder(
             images_path))
 
-    def __extract_filename_from_xml_image_element(self, element: XmlEt.ElementTree):
-        return element.find(GALLERY_XML_IMAGES_FILENAME_TAG).text
-
-    def __get_list_of_images_from_gallery(self):
-        xmlImages = map(self.__extract_filename_from_xml_image_element,
-                        self.__xml_gallery_tree.getroot().find(GALLERY_XML_IMAGES_TAG))
-        return xmlImages
-
-    def __update_gallery_images_set(self):
-        self.__images_in_gallery_set = set(
-            self.__get_list_of_images_from_gallery())
-
-    def __select_image_position(self, xml_images_element):
-        for i, xml_image_element in enumerate(xml_images_element):
-            print(
-                f"  [{i}] - {self.__extract_filename_from_xml_image_element(xml_image_element)}")
-        return int(input(f"-> At which index shall the image be inserted? "))
-
-    def __synchronize_gallery_elements(self, missing_gallery_elements, superfluous_gallery_elements):
-        xml_images_element = self.__xml_gallery_tree.getroot().find(GALLERY_XML_IMAGES_TAG)
+    def __remove_images_from_gallery(self, superfluous_gallery_elements: set[str]):
+        images_element = get_images_element(self.__xml_gallery_tree)
         xml_image_elements_to_remove = []
-        # check for images to remove from gallery
-        for xml_image_element in xml_images_element:
-            image_name = self.__extract_filename_from_xml_image_element(
-                xml_image_element)
+
+        for image_element in images_element:
+            image_name = extract_filename_from_image_element(image_element)
             if image_name in superfluous_gallery_elements:
                 print(f"\n{image_name}:")
                 response = input(
@@ -51,12 +31,14 @@ class GalleryXmlUpdater:
                 if response in ("yes", "y"):
                     print(
                         f"-> Removing image {image_name} from {REQUIRED_GALLERY_FILE_GALLERY}")
-                    xml_image_elements_to_remove.append(xml_image_element)
+                    xml_image_elements_to_remove.append(image_element)
 
-        for xml_image_element in xml_image_elements_to_remove:
-            xml_images_element.remove(xml_image_element)
+        for image_element in xml_image_elements_to_remove:
+            images_element.remove(image_element)
 
-        # check for images to remove from images folder
+    def __add_images_to_gallery(self, missing_gallery_elements):
+        images_element = get_images_element(self.__xml_gallery_tree)
+
         for image_name in missing_gallery_elements:
             print(f"\n{image_name}:")
             response = input(
@@ -74,23 +56,29 @@ class GalleryXmlUpdater:
                     altGer = input(f"-> Please provide a german description: ")
                     size = input(
                         f"-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
-                    index = self.__select_image_position(xml_images_element)
-                    new_xml_image_element = GalleryImageElement(
-                        image_name, caption, alt, altGer, size).create()
-                    xml_images_element.insert(index, new_xml_image_element)
+
+                    print_images_list(self.__xml_gallery_tree)
+                    index = int(
+                        input(f"-> At which index shall the image be inserted? "))
+                    new_xml_image_element = create_image_element(
+                        image_name, caption, alt, altGer, size)
+                    images_element.insert(index, new_xml_image_element)
 
     def update(self):
-        self.__xml_gallery_tree = parse_gallery_xml(self.__gallery_xml_path)
+        xml_data = read_gallery_xml(self.__gallery_path)
+        self.__xml_gallery_tree = parse_gallery_xml(xml_data)
+
         if self.__xml_gallery_tree != None:
-            self.__update_gallery_images_set()
+            images_in_gallery_set = set(
+                get_image_element_filenames_list(self.__xml_gallery_tree))
 
-            missing_gallery_elements = self.__images_set - self.__images_in_gallery_set
-            superfluous_gallery_elements = self.__images_in_gallery_set - self.__images_set
+            self.__remove_images_from_gallery(
+                images_in_gallery_set - self.__images_set)
 
-            self.__synchronize_gallery_elements(
-                missing_gallery_elements, superfluous_gallery_elements)
-            XmlEt.indent(self.__xml_gallery_tree.getroot())
-            self.__xml_gallery_tree.write(self.__gallery_xml_path)
+            self.__add_images_to_gallery(
+                self.__images_set - images_in_gallery_set)
+
+            write_formatted_xml(self.__xml_gallery_tree, self.__gallery_path)
             return True
         else:
             return False
