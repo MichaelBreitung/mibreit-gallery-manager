@@ -8,6 +8,8 @@ Adding and removing images from the image galleries within a homepage created wi
 
 Python (Version 3.11) must be installed on system. Then you can use *pip install -r requirements.txt* to install the required packages. 
 
+You also need to download the latest version of Phil Harvey's ExifTool. It is used via *subprocess* and needs to be either available in the *path*.
+
 ## Usage
 
 Call *python gallery_manager.py -i **path to galleries*** for the script to traverse all contained gallery folders and prompt you for new images that have been added or for images that have been removed.

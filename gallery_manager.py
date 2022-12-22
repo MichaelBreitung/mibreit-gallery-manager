@@ -1,8 +1,8 @@
 """Module used to parse command line arguments"""
 import argparse
 import os
-from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_path, get_thumbs_path, \
-    update_image_exif_data
+from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_path, get_thumbs_path
+from modules.gallery_exif_tool import GalleryExifUpdate
 from modules.gallery_xml_tools import parse_gallery_xml, update_image_descriptions, get_images_element, \
     write_formatted_xml, read_gallery_xml
 from modules.gallery_xml_updater import *
@@ -38,9 +38,9 @@ def update_image_descriptions_in_folder(folder: str) -> None:
         if xml_gallery_tree is not None:
             images_element = get_images_element(xml_gallery_tree)
 
-            def update_image_callback(image_name, image_description):
-                update_image_exif_data(get_images_path(
-                    folder), image_name, image_description)
+            def update_image_callback(image_name, image_title, image_description):
+                images_path = get_images_path(folder)
+                GalleryExifUpdate().update(images_path, image_name, image_title, image_description)
 
             update_image_descriptions(images_element, update_image_callback)
 

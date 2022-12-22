@@ -88,7 +88,7 @@ def create_image_element(image_name, caption, alt, altDe, size):
     return new_xml_image_element
 
 
-def update_image_descriptions(images_element: XmlEt.Element, image_callback: Callable[[str, str], None] | None = None):
+def update_image_descriptions(images_element: XmlEt.Element, image_callback: Callable[[str, str, str], None] | None = None):
     for image_element in images_element:
         image_name = extract_filename_from_image_element(
             image_element)
@@ -96,18 +96,25 @@ def update_image_descriptions(images_element: XmlEt.Element, image_callback: Cal
         alt_element = image_element.find(GALLERY_XML_IMAGES_ALT_TAG)
         altde_element = image_element.find(
             GALLERY_XML_IMAGES_ALTDE_TAG)
+        caption_element = image_element.find(GALLERY_XML_IMAGES_CAPTION_TAG)
+
+        if caption_element is None:
+            caption_element = XmlEt.SubElement(image_element, GALLERY_XML_IMAGES_CAPTION_TAG)
+
+        if caption_element.text is None or len(caption_element.text) == 0:
+            caption_element.text = input("-> Please provide a caption: ")
 
         if alt_element is None:
-            alt_element = XmlEt.SubElement(image_element, "alt")
+            alt_element = XmlEt.SubElement(image_element, GALLERY_XML_IMAGES_ALT_TAG)
 
         if alt_element.text is None or len(alt_element.text) == 0:
             alt_element.text = input("-> Please provide a description: ")
 
-        if image_callback is not None and len(alt_element.text) > 0:
-            image_callback(image_name, alt_element.text)
+        if image_callback is not None and len(alt_element.text) > 0 and len(caption_element.text):
+            image_callback(image_name, caption_element.text, alt_element.text)
 
         if altde_element is None:
-            altde_element = XmlEt.SubElement(image_element, "altDe")
+            altde_element = XmlEt.SubElement(image_element, GALLERY_XML_IMAGES_ALTDE_TAG)
 
         if altde_element.text is None or len(altde_element.text) == 0:
             altde_element.text = input(

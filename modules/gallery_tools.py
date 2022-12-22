@@ -1,6 +1,4 @@
 from os import path, listdir, getcwd
-from PIL import Image
-from PIL.ExifTags import Base
 from .gallery_configuration import REQUIRED_GALLERY_ELEMENTS, REQUIRED_GALLERY_FOLDER_IMAGES, \
     REQUIRED_GALLERY_FOLDER_SMALL
 
@@ -43,13 +41,3 @@ def get_images_path(folder: str) -> str:
 def get_thumbs_path(folder: str) -> str:
     """Returns thumbs path within given gallery folder"""
     return path.join(folder, REQUIRED_GALLERY_FOLDER_SMALL)
-
-
-def update_image_exif_data(images_folder, image_name: str, description: str):
-    """Updates the description EXIF data for given image"""
-    image_path = path.join(images_folder, image_name)
-    image_data = Image.open(image_path)
-    if image_data is not None:
-        exif_data = image_data.getexif()
-        exif_data[Base.ImageDescription.value] = description
-        image_data.save(image_path, exif=exif_data)
