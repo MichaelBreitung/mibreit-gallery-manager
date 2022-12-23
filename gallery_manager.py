@@ -2,7 +2,7 @@
 import argparse
 import os
 from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_path, get_thumbs_path
-from modules.gallery_exif_tool import GalleryExifUpdate
+from modules.gallery_exif_tool import GalleryExifUpdate, read_configuration
 from modules.gallery_xml_tools import parse_gallery_xml, update_image_descriptions, get_images_element, \
     write_formatted_xml, read_gallery_xml
 from modules.gallery_xml_updater import *
@@ -30,7 +30,7 @@ def synchronize_galleries_in_folder(folder: str) -> None:
                 synchronize_galleries_in_folder(folder_element.path)
 
 
-def update_image_descriptions_in_folder(folder: str) -> None:
+def update_image_descriptions_in_folder(folder: str, exif_updater: GalleryExifUpdate) -> None:
     if is_gallery_path(folder):
         print("\nUpdating image descriptions in gallery -> ", folder)
         xml_data = read_gallery_xml(folder)
@@ -40,7 +40,8 @@ def update_image_descriptions_in_folder(folder: str) -> None:
 
             def update_image_callback(image_name, image_title, image_description):
                 images_path = get_images_path(folder)
-                GalleryExifUpdate().update(images_path, image_name, image_title, image_description)
+                exif_updater.update(
+                    images_path, image_name, image_title, image_description)
 
             update_image_descriptions(images_element, update_image_callback)
 
@@ -63,11 +64,21 @@ parser.add_argument("-d", "--description", default=False,
                     action=argparse.BooleanOptionalAction,
                     help="Add this flag, to update the descriptions of the photos \
                         within the input galleries.")
+parser.add_argument("-c", "--config", type=str,
+                    required=False, help="Path to config file (json)")
+
 
 cmd_args = parser.parse_args()
+config = None
+
+if cmd_args.config:
+    config = read_configuration(cmd_args.config)
+
+gallery_exif_update = GalleryExifUpdate(config)
+
 path = get_valid_path(cmd_args.input)
 
 if cmd_args.description:
-    update_image_descriptions_in_folder(path)
+    update_image_descriptions_in_folder(path, gallery_exif_update)
 else:
     synchronize_galleries_in_folder(path)
