@@ -11,6 +11,9 @@ GALLERY_XML_IMAGES_CAPTION_TAG = "caption"
 GALLERY_XML_IMAGES_ALT_TAG = "alt"
 GALLERY_XML_IMAGES_ALTDE_TAG = "altDe"
 GALLERY_XML_IMAGES_PRINTS_TAG = "prints"
+GALLERY_XML_CONTENT_TAG = "content"
+GALLERY_XML_INFO_TAG = "infoEn"
+GALLERY_XML_INFODE_TAG = "infoDe"
 
 CONFIG_CREATOR_NAME = "creator_name"
 CONFIG_CREATOR_URL = "creator_url"
@@ -56,7 +59,7 @@ for k, v in CONFIG_EXIF_MAPPING.items():
     if isinstance(v, list):
         for element in v:
             IMAGE_METADATA_TAGS_TO_KEEP.append(remove_group_from_tag(element))
-    else:
+    elif isinstance(v, str):
         IMAGE_METADATA_TAGS_TO_KEEP.append(remove_group_from_tag(v))
 
 THUMBNAIL_SIZE = (200, 200)

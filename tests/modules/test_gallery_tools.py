@@ -31,15 +31,15 @@ class TestGalleryImageElement(unittest.TestCase):
     def test_is_gallery_path(self):
         self.assertEqual(is_gallery_path(gallery_folder), True)
 
-    def test_is_gallery_path(self):
+    def test_is_gallery_path_folder_missing(self):
         self.assertEqual(is_gallery_path(
             no_gallery_folder_small_missing), False)
 
-    def test_is_gallery_path(self):
+    def test_is_gallery_path_images_missing(self):
         self.assertEqual(is_gallery_path(
             no_gallery_folder_images_missing), False)
 
-    def test_is_gallery_path(self):
+    def test_is_gallery_path_gallery_missing(self):
         self.assertEqual(is_gallery_path(
             no_gallery_folder_file_gallery_missing), False)
 

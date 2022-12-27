@@ -4,11 +4,11 @@ from .gallery_configuration import THUMB_QUALITY, THUMB_SHARPEN_FACTOR, THUMBNAI
 
 
 class GalleryThumbCreator:
-    def __init__(self, images_path, thumbs_path):
+    def __init__(self, images_path: str, thumbs_path: str):
         self.__images_path = images_path
         self.__thumbs_path = thumbs_path
 
-    def create(self, thumb_name):
+    def create(self, thumb_name: str):
         thumb = Image.open(path.join(
             self.__images_path, thumb_name)).copy()
         thumb.thumbnail(THUMBNAIL_SIZE, Image.LANCZOS)

@@ -4,7 +4,7 @@ import os
 from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_path, get_thumbs_path
 from modules.gallery_exif_tool import GalleryExifUpdate, read_configuration
 from modules.gallery_xml_tools import parse_gallery_xml, update_image_descriptions, get_images_element, \
-    write_formatted_xml, read_gallery_xml
+    write_formatted_xml, read_gallery_xml, update_gallery_description, get_info_element
 from modules.gallery_xml_updater import *
 from modules.gallery_thumb_updater import *
 
@@ -36,6 +36,11 @@ def update_image_descriptions_in_folder(folder: str, exif_updater: GalleryExifUp
         xml_data = read_gallery_xml(folder)
         xml_gallery_tree = parse_gallery_xml(xml_data)
         if xml_gallery_tree is not None:
+            info_en_element = get_info_element(xml_gallery_tree)
+            info_de_element = get_info_element(xml_gallery_tree, True)
+          
+            update_gallery_description(info_en_element, info_de_element)
+
             images_element = get_images_element(xml_gallery_tree)
 
             def update_image_callback(image_name, image_title, image_description):
@@ -52,7 +57,7 @@ def update_image_descriptions_in_folder(folder: str, exif_updater: GalleryExifUp
     else:
         for folder_element in os.scandir(folder):
             if folder_element.is_dir():
-                update_image_descriptions_in_folder(folder_element.path)
+                update_image_descriptions_in_folder(folder_element.path, exif_updater)
 
 
 # Start of Main Program
@@ -76,9 +81,9 @@ if cmd_args.config:
 
 gallery_exif_update = GalleryExifUpdate(config)
 
-path = get_valid_path(cmd_args.input)
+path: str = get_valid_path(cmd_args.input) # type: ignore
 
 if cmd_args.description:
-    update_image_descriptions_in_folder(path, gallery_exif_update)
+    update_image_descriptions_in_folder(path, gallery_exif_update) # type: ignore
 else:
-    synchronize_galleries_in_folder(path)
+    synchronize_galleries_in_folder(path) # type: ignore

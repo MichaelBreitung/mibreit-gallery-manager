@@ -1,4 +1,5 @@
 from os import path, remove
+import xml.etree.ElementTree as XmlEt
 from .gallery_tools import get_list_of_supported_images_in_folder
 from .gallery_xml_tools import extract_filename_from_image_element, read_gallery_xml, parse_gallery_xml, \
     print_images_list, create_image_element, write_formatted_xml, get_image_element_filenames_list, get_images_element
@@ -7,21 +8,18 @@ from .gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, \
 
 
 class GalleryXmlUpdater:
-    __images_path = None
-    __images_set = None
-    __gallery_path = None
-    __xml_gallery_tree = None
+    __xml_gallery_tree: XmlEt.Element | None = None
 
-    def __init__(self, images_path, gallery_path):
+    def __init__(self, images_path: str, gallery_path: str):
         self.__images_path = images_path
         self.__gallery_path = gallery_path
-        self.__images_set = self.__images_set = set(get_list_of_supported_images_in_folder(
+        self.__images_set = set(get_list_of_supported_images_in_folder(
             images_path))
 
     def __remove_images_from_gallery(self, superfluous_gallery_elements: set[str]):
-        images_element = get_images_element(self.__xml_gallery_tree)
-        xml_image_elements_to_remove = []
+        images_element = get_images_element(self.__xml_gallery_tree) # type: ignore
 
+        xml_image_elements_to_remove = []
         for image_element in images_element:
             image_name = extract_filename_from_image_element(image_element)
             if image_name in superfluous_gallery_elements:
@@ -36,8 +34,8 @@ class GalleryXmlUpdater:
         for image_element in xml_image_elements_to_remove:
             images_element.remove(image_element)
 
-    def __add_images_to_gallery(self, missing_gallery_elements):
-        images_element = get_images_element(self.__xml_gallery_tree)
+    def __add_images_to_gallery(self, missing_gallery_elements: set[str]):
+        images_element = get_images_element(self.__xml_gallery_tree) # type: ignore
 
         for image_name in missing_gallery_elements:
             print(f"\n{image_name}:")
@@ -57,12 +55,12 @@ class GalleryXmlUpdater:
                     size = input(
                         f"-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
 
-                    print_images_list(self.__xml_gallery_tree)
+                    print_images_list(self.__xml_gallery_tree) # type: ignore
                     index = int(
                         input(f"-> At which index shall the image be inserted? "))
                     new_xml_image_element = create_image_element(
                         image_name, caption, alt, altGer, size)
-                    images_element.insert(index, new_xml_image_element)
+                    images_element.insert(index, new_xml_image_element) # type: ignore
 
     def update(self):
         xml_data = read_gallery_xml(self.__gallery_path)

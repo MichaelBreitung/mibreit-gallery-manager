@@ -15,8 +15,8 @@ def read_configuration(config_path: str) -> dict[str, str] | None:
 
 
 class GalleryExifUpdate:
-    __exif_tool_executable = None
-    __exif_tool_params_from_settings = []
+    __exif_tool_executable: str = "./exiftool"
+    __exif_tool_params_from_settings: list[str] = []
 
     def __init__(self, settings: dict[str, str] | None = None):
         platform_name = platform.system()
@@ -26,7 +26,6 @@ class GalleryExifUpdate:
             if path.exists("exiftool.exe"):
                 self.__has_executable = True
         else:
-            self.__exif_tool_executable = "./exiftool"
             if path.exists("exiftool"):
                 self.__has_executable = True
 
@@ -41,7 +40,7 @@ class GalleryExifUpdate:
                         self.__exif_tool_params_from_settings.append(
                             f"-{v}={settings[k]}")
 
-    def __get_tags_to_remove(self, exif_data):
+    def __get_tags_to_remove(self, exif_data: dict[str, str]):
         remove = []
         for group_tag, group_value in exif_data.items():
             if group_tag in IMAGE_METADATA_GROUPS_TO_KEEP:
