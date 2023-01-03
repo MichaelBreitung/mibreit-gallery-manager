@@ -88,35 +88,62 @@ def print_images_list(gallery_element: XmlEt.Element):
             f"  [{i}] - {extract_filename_from_image_element(images_element)}")
 
 
-def create_image_element(image_name: str, caption: str, alt: str, altDe: str, size: str) -> XmlEt.Element:
+def create_image_element(image_name: str) -> XmlEt.Element:
     new_xml_image_element = XmlEt.fromstring(IMAGE_ELEMENT_BLUEPRINT)
 
     xml_filename = new_xml_image_element.find(
         GALLERY_XML_IMAGES_FILENAME_TAG)
     xml_filename.text = image_name  # type: ignore
 
-    xml_caption = new_xml_image_element.find(
-        GALLERY_XML_IMAGES_CAPTION_TAG)
-    xml_caption.text = caption  # type: ignore
-
-    xml_alt = new_xml_image_element.find(
-        GALLERY_XML_IMAGES_ALT_TAG)
-    xml_alt.text = alt  # type: ignore
-
-    xml_altDe = new_xml_image_element.find(
-        GALLERY_XML_IMAGES_ALTDE_TAG)
-    xml_altDe.text = altDe  # type: ignore
-
-    xml_prints = new_xml_image_element.find(
-        GALLERY_XML_IMAGES_PRINTS_TAG)
-    if size == "1":
-        xml_prints.set("size", "small")  # type: ignore
-    elif size == "2":
-        xml_prints.set("size", "medium")  # type: ignore
-    else:
-        xml_prints.set("size", "large")  # type: ignore
-
     return new_xml_image_element
+
+
+def update_image_description(image_element: XmlEt.Element, image_name: str, image_callback: Callable[[str, str, str], None] | None = None):   
+    alt_element = image_element.find(GALLERY_XML_IMAGES_ALT_TAG)
+    altde_element = image_element.find(
+        GALLERY_XML_IMAGES_ALTDE_TAG)
+    caption_element = image_element.find(
+        GALLERY_XML_IMAGES_CAPTION_TAG)
+    xml_prints = image_element.find(
+        GALLERY_XML_IMAGES_PRINTS_TAG)
+        
+    if xml_prints is None:
+        xml_prints = XmlEt.SubElement(image_element, GALLERY_XML_IMAGES_PRINTS_TAG)
+
+    if xml_prints.get("size") is None:
+        size = input("-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
+        if size == "1":
+            xml_prints.set("size", "small")  # type: ignore
+        elif size == "2":
+            xml_prints.set("size", "medium")  # type: ignore
+        else:
+            xml_prints.set("size", "large")  # type: ignore
+
+    if caption_element is None:
+        caption_element = XmlEt.SubElement(
+            image_element, GALLERY_XML_IMAGES_CAPTION_TAG)
+
+    if caption_element.text is None or len(caption_element.text) == 0:
+        caption_element.text = input("-> Please provide a caption: ")
+
+    if alt_element is None:
+        alt_element = XmlEt.SubElement(
+            image_element, GALLERY_XML_IMAGES_ALT_TAG)
+
+    if alt_element.text is None or len(alt_element.text) == 0:
+        alt_element.text = input("-> Please provide a description: ")
+
+    if image_callback is not None and len(alt_element.text) > 0 and len(caption_element.text):
+        image_callback(image_name, caption_element.text,
+                       alt_element.text)
+
+    if altde_element is None:
+        altde_element = XmlEt.SubElement(
+            image_element, GALLERY_XML_IMAGES_ALTDE_TAG)
+
+    if altde_element.text is None or len(altde_element.text) == 0:
+        altde_element.text = input(
+            "-> Please provide a german description: ")
 
 
 def update_image_descriptions(images_element: XmlEt.Element, image_callback: Callable[[str, str, str], None] | None = None):
@@ -126,37 +153,7 @@ def update_image_descriptions(images_element: XmlEt.Element, image_callback: Cal
             image_element)
         if image_name is not None:
             print(f"\n{image_name}:")
-            alt_element = image_element.find(GALLERY_XML_IMAGES_ALT_TAG)
-            altde_element = image_element.find(
-                GALLERY_XML_IMAGES_ALTDE_TAG)
-            caption_element = image_element.find(
-                GALLERY_XML_IMAGES_CAPTION_TAG)
-
-            if caption_element is None:
-                caption_element = XmlEt.SubElement(
-                    image_element, GALLERY_XML_IMAGES_CAPTION_TAG)
-
-            if caption_element.text is None or len(caption_element.text) == 0:
-                caption_element.text = input("-> Please provide a caption: ")
-
-            if alt_element is None:
-                alt_element = XmlEt.SubElement(
-                    image_element, GALLERY_XML_IMAGES_ALT_TAG)
-
-            if alt_element.text is None or len(alt_element.text) == 0:
-                alt_element.text = input("-> Please provide a description: ")
-
-            if image_callback is not None and len(alt_element.text) > 0 and len(caption_element.text):
-                image_callback(image_name, caption_element.text,
-                               alt_element.text)
-
-            if altde_element is None:
-                altde_element = XmlEt.SubElement(
-                    image_element, GALLERY_XML_IMAGES_ALTDE_TAG)
-
-            if altde_element.text is None or len(altde_element.text) == 0:
-                altde_element.text = input(
-                    "-> Please provide a german description: ")
+            update_image_description(image_element, image_name, image_callback)
         else:
             invalid_image_elements.append(image_element)
 

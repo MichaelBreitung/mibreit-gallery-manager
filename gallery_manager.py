@@ -9,25 +9,29 @@ from modules.gallery_xml_updater import *
 from modules.gallery_thumb_updater import *
 
 
-def synchronize_gallery(folder: str):
+def synchronize_gallery(folder: str, exif_updater: GalleryExifUpdate):
     print("\nSynchronizing gallery -> ", folder)
     images_path = get_images_path(folder)
     thumbs_path = get_thumbs_path(folder)
 
-    if GalleryXmlUpdater(images_path, folder).update() is True:
+    def update_image_callback(image_name, image_title, image_description):
+        exif_updater.update(
+            images_path, image_name, image_title, image_description)
+
+    if GalleryXmlUpdater(images_path, folder, update_image_callback).update() is True:
         GalleryThumbUpdater(images_path, thumbs_path).update()
     else:
         print(
             f"Invalid Gallery under {path}. The {REQUIRED_GALLERY_FILE_GALLERY} is invalid.")
 
 
-def synchronize_galleries_in_folder(folder: str) -> None:
+def synchronize_galleries_in_folder(folder: str, exif_updater: GalleryExifUpdate) -> None:
     if is_gallery_path(folder):
-        synchronize_gallery(folder)
+        synchronize_gallery(folder, exif_updater)
     else:
         for folder_element in os.scandir(folder):
             if folder_element.is_dir():
-                synchronize_galleries_in_folder(folder_element.path)
+                synchronize_galleries_in_folder(folder_element.path, exif_updater)
 
 
 def update_image_descriptions_in_folder(folder: str, exif_updater: GalleryExifUpdate) -> None:
@@ -86,4 +90,4 @@ path: str = get_valid_path(cmd_args.input) # type: ignore
 if cmd_args.description:
     update_image_descriptions_in_folder(path, gallery_exif_update) # type: ignore
 else:
-    synchronize_galleries_in_folder(path) # type: ignore
+    synchronize_galleries_in_folder(path, gallery_exif_update) # type: ignore

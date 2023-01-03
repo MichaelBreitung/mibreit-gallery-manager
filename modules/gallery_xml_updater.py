@@ -1,8 +1,10 @@
 from os import path, remove
 import xml.etree.ElementTree as XmlEt
+from collections.abc import Callable
 from .gallery_tools import get_list_of_supported_images_in_folder
 from .gallery_xml_tools import extract_filename_from_image_element, read_gallery_xml, parse_gallery_xml, \
-    print_images_list, create_image_element, write_formatted_xml, get_image_element_filenames_list, get_images_element
+    print_images_list, create_image_element, write_formatted_xml, get_image_element_filenames_list, \
+    get_images_element, update_image_description
 from .gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, \
     REQUIRED_GALLERY_FOLDER_IMAGES
 
@@ -10,11 +12,12 @@ from .gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, \
 class GalleryXmlUpdater:
     __xml_gallery_tree: XmlEt.Element | None = None
 
-    def __init__(self, images_path: str, gallery_path: str):
+    def __init__(self, images_path: str, gallery_path: str, update_image_callback: Callable[[str, str, str], None] | None = None):
         self.__images_path = images_path
         self.__gallery_path = gallery_path
         self.__images_set = set(get_list_of_supported_images_in_folder(
             images_path))
+        self.__update_image_callback = update_image_callback
 
     def __remove_images_from_gallery(self, superfluous_gallery_elements: set[str]):
         images_element = get_images_element(self.__xml_gallery_tree) # type: ignore
@@ -48,18 +51,12 @@ class GalleryXmlUpdater:
             else:
                 response = input(
                     f"-> Shall it instead be created inside {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
-                if response in ("yes", "y"):
-                    caption = input(f"-> Please provide a caption: ")
-                    alt = input(f"-> Please provide a description: ")
-                    altGer = input(f"-> Please provide a german description: ")
-                    size = input(
-                        f"-> Please provide a maximum print size (1 - up to 45cm; 2 - up to 60cm; 3 - up to 90cm): ")
+                if response in ("yes", "y"): 
+                    new_xml_image_element = create_image_element(image_name)
+                    update_image_description(new_xml_image_element, image_name, self.__update_image_callback)
 
-                    print_images_list(self.__xml_gallery_tree) # type: ignore
-                    index = int(
-                        input(f"-> At which index shall the image be inserted? "))
-                    new_xml_image_element = create_image_element(
-                        image_name, caption, alt, altGer, size)
+                    print_images_list(self.__xml_gallery_tree) # type: ignore  
+                    index = int(input(f"-> At which index shall the image be inserted? "))
                     images_element.insert(index, new_xml_image_element) # type: ignore
 
     def update(self):
