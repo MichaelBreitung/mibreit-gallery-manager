@@ -56,7 +56,8 @@ class GalleryXmlUpdater:
                     update_image_description(new_xml_image_element, image_name, self.__update_image_callback)
 
                     print_images_list(self.__xml_gallery_tree) # type: ignore  
-                    index = int(input(f"-> At which index shall the image be inserted? "))
+                    index_str = input("-> At which index shall the image be inserted?")
+                    index = int(index_str) if index_str.isnumeric() else 0
                     images_element.insert(index, new_xml_image_element) # type: ignore
 
     def update(self):
