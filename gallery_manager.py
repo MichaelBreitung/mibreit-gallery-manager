@@ -5,8 +5,9 @@ from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_pa
 from modules.gallery_exif_tool import GalleryExifUpdate, read_configuration
 from modules.gallery_xml_tools import parse_gallery_xml, update_image_descriptions, get_images_element, \
     write_formatted_xml, read_gallery_xml, update_gallery_description, get_info_element
-from modules.gallery_xml_updater import *
+from modules.gallery_xml_updater import GalleryXmlUpdater, REQUIRED_GALLERY_FILE_GALLERY
 from modules.gallery_thumb_updater import *
+from modules.gallery_create import GalleryCreator
 
 
 def synchronize_gallery(folder: str, exif_updater: GalleryExifUpdate):
@@ -63,6 +64,9 @@ def update_image_descriptions_in_folder(folder: str, exif_updater: GalleryExifUp
             if folder_element.is_dir():
                 update_image_descriptions_in_folder(folder_element.path, exif_updater)
 
+def create_new_gallery_in_folder(folder: str) -> None:
+    print("\nCreating new gallery in ", folder)
+    GalleryCreator(folder).create()
 
 # Start of Main Program
 parser = argparse.ArgumentParser("mibreit-gallery-manager")
@@ -73,6 +77,10 @@ parser.add_argument("-d", "--description", default=False,
                     action=argparse.BooleanOptionalAction,
                     help="Add this flag, to update the descriptions of the photos \
                         within the input galleries.")
+parser.add_argument("-n", "--new", default=False,
+                    action=argparse.BooleanOptionalAction,
+                    help="Add this flag, to create a new, empty gallery within the input \
+                        galleries folder.")
 parser.add_argument("-c", "--config", type=str,
                     required=False, help="Path to config file (json)")
 
@@ -87,7 +95,9 @@ gallery_exif_update = GalleryExifUpdate(config)
 
 path: str = get_valid_path(cmd_args.input) # type: ignore
 
-if cmd_args.description:
+if cmd_args.new:
+    create_new_gallery_in_folder(path) # type: ignore
+elif cmd_args.description:
     update_image_descriptions_in_folder(path, gallery_exif_update) # type: ignore
 else:
     synchronize_galleries_in_folder(path, gallery_exif_update) # type: ignore

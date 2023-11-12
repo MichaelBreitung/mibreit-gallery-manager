@@ -1,0 +1,18 @@
+<MibreitGallery imagePath="images/" thumbPath="small/">
+  <infoEn keywords="TODO" description="TODO" title="TODO">
+    <header_h1>TODO</header_h1>
+    <header_h2>TODO</header_h2>
+    <content_category>TODO</content_category>
+    <content_title>TODO</content_title>
+    <content>Gallery description</content>
+  </infoEn>
+  <infoDe keywords="TODO" description="TODO" title="TODO">
+    <header_h1>TODO</header_h1>
+    <header_h2>TODO</header_h2>
+    <content_category>TODO</content_category>
+    <content_title>TODO</content_title>
+    <content>Beschreibung zur Galerie</content>
+  </infoDe>
+  <images>
+  </images>
+</MibreitGallery>
