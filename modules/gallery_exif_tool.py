@@ -17,6 +17,7 @@ def read_configuration(config_path: str) -> dict[str, str] | None:
 class GalleryExifUpdate:
     __exif_tool_executable: str = "./exiftool"
     __exif_tool_params_from_settings: list[str] = []
+    __has_executable: bool = False
 
     def __init__(self, settings: dict[str, str] | None = None):
         platform_name = platform.system()
