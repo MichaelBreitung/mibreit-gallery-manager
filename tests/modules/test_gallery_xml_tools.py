@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import patch
-import copy
 import xml.etree.ElementTree as XmlEt
 from modules.gallery_xml_tools import create_image_element, parse_gallery_xml, get_images_element, \
     get_image_element_filenames_list, extract_filename_from_image_element, update_image_descriptions
@@ -77,42 +76,19 @@ class TestParseGalleryXml(unittest.TestCase):
 
 class TestCreateImageElement(unittest.TestCase):
 
-    def test_create_size_1(self):
+    def test_create_image(self):
         new_xml_image_element=create_image_element(
-            "test_image", "test_caption", "test_alt", "test_altde", "1")
+            "test_image")
         self.assertEqual(XmlEt.tostring(new_xml_image_element, encoding="unicode"), '''<image>
 <filename>test_image</filename>
-<caption>test_caption</caption>
-<alt>test_alt</alt>
-<altDe>test_altde</altDe>
-<prints size="small" />
+<caption />
+<alt />
+<altDe />
+<prints />
 </image>''')
-
-    def test_create_size_2(self):
-        new_xml_image_element=create_image_element(
-            "test_image", "test_caption", "test_alt", "test_altde", "2")
-        self.assertEqual(XmlEt.tostring(new_xml_image_element, encoding="unicode"), '''<image>
-<filename>test_image</filename>
-<caption>test_caption</caption>
-<alt>test_alt</alt>
-<altDe>test_altde</altDe>
-<prints size="medium" />
-</image>''')
-
-    def test_create_size_3(self):
-        new_xml_image_element=create_image_element(
-            "test_image", "test_caption", "test_alt", "test_altde", "3")
-        self.assertEqual(XmlEt.tostring(new_xml_image_element, encoding="unicode"), '''<image>
-<filename>test_image</filename>
-<caption>test_caption</caption>
-<alt>test_alt</alt>
-<altDe>test_altde</altDe>
-<prints size="large" />
-</image>''')
-
 
 class TestUpdateImageDescriptions(unittest.TestCase):
-    __input_side_effects=['title', 'english', 'german']
+    __input_side_effects=['3', 'title', 'english', 'german']
 
     @ patch('builtins.input', side_effect=__input_side_effects)
     def test_update_image_descriptions(self, mock_input):
@@ -120,7 +96,7 @@ class TestUpdateImageDescriptions(unittest.TestCase):
             f"""<images><image><filename>fname</filename></image></images>""")
         update_image_descriptions(images_element)
         self.assertEqual(XmlEt.tostring(images_element, encoding="unicode"),
-                         f"<images><image><filename>fname</filename><caption>{self.__input_side_effects[0]}</caption><alt>{self.__input_side_effects[1]}</alt><altDe>{self.__input_side_effects[2]}</altDe></image></images>")
+                         f"<images><image><filename>fname</filename><prints size=\"large\" /><caption>{self.__input_side_effects[1]}</caption><alt>{self.__input_side_effects[2]}</alt><altDe>{self.__input_side_effects[3]}</altDe></image></images>")
 
     @ patch('builtins.input', side_effect=__input_side_effects)
     def test_update_image_descriptions_callback(self, mock_input):
@@ -136,8 +112,8 @@ class TestUpdateImageDescriptions(unittest.TestCase):
 
         update_image_descriptions(image_element, callback)
 
-        self.assertEqual(new_image_title, self.__input_side_effects[0])
-        self.assertEqual(new_image_description, self.__input_side_effects[1])
+        self.assertEqual(new_image_title, self.__input_side_effects[1])
+        self.assertEqual(new_image_description, self.__input_side_effects[2])
 
 
 if __name__ == '__main__':
