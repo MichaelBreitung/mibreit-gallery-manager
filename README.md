@@ -12,7 +12,7 @@ You also need to download the latest version of Phil Harvey's ExifTool. It is us
 
 ## Usage
 
-Call *python gallery_manager.py -i **path to galleries*** for the script to traverse all contained gallery folders and prompt you for new images that have been added or for images that have been removed.
+Call ``python gallery_manager.py -i **path to galleries**`` for the script to traverse all contained gallery folders and prompt you for new images that have been added or for images that have been removed.
 
 ## Unit Testing
 

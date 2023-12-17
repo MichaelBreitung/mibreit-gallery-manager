@@ -33,6 +33,10 @@ class GalleryXmlUpdater:
                     print(
                         f"-> Removing image {image_name} from {REQUIRED_GALLERY_FILE_GALLERY}")
                     xml_image_elements_to_remove.append(image_element)
+                response = input(
+                        f"\nDo you want to continue with the next image? (yes/no) ")
+                if response in ("no", "n"):
+                    break
 
         for image_element in xml_image_elements_to_remove:
             images_element.remove(image_element)
@@ -56,9 +60,13 @@ class GalleryXmlUpdater:
                     update_image_description(new_xml_image_element, image_name, self.__update_image_callback)
 
                     print_images_list(self.__xml_gallery_tree) # type: ignore  
-                    index_str = input("-> At which index shall the image be inserted?")
+                    index_str = input("-> At which index shall the image be inserted? ")
                     index = int(index_str) if index_str.isnumeric() else 0
                     images_element.insert(index, new_xml_image_element) # type: ignore
+            response = input(
+                    f"\nDo you want to continue with the next image? (yes/no) ")
+            if response in ("no", "n"):
+                break
 
     def update(self):
         xml_data = read_gallery_xml(self.__gallery_path)
