@@ -16,7 +16,7 @@ IMAGE_ELEMENT_BLUEPRINT = f'''<image>
 
 
 def read_gallery_xml(folder: str) -> str:
-    with open(path.join(folder, REQUIRED_GALLERY_FILE_GALLERY)) as f:
+    with open(path.join(folder, REQUIRED_GALLERY_FILE_GALLERY), encoding="utf-8") as f:
         contents = f.read()
     return contents
 
