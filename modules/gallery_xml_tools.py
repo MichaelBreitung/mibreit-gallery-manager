@@ -185,4 +185,4 @@ def write_formatted_xml(gallery_element: XmlEt.Element, gallery_folder: str):
     """Write a formatted Gallery XML"""
     xml_gallery_path = path.join(gallery_folder, REQUIRED_GALLERY_FILE_GALLERY)
     XmlEt.indent(gallery_element)
-    XmlEt.ElementTree(gallery_element).write(xml_gallery_path)
+    XmlEt.ElementTree(gallery_element).write(xml_gallery_path, encoding="utf-8")
