@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock
 from modules.gallery_tools import is_gallery_path, get_list_of_supported_images_in_folder
-from modules.gallery_configuration import REQUIRED_GALLERY_FOLDER_SMALL, REQUIRED_GALLERY_FOLDER_IMAGES, REQUIRED_GALLERY_FILE_GALLERY, REQUIRED_GALLERY_ELEMENTS
+from modules.gallery_configuration import GALLERY_FOLDER_SMALL, GALLERY_FOLDER_IMAGES, GALLERY_FILE_GALLERY, REQUIRED_GALLERY_ELEMENTS
 
 gallery_folder = "gallery_folder"
 no_gallery_folder_small_missing = "no_gallery_folder_small_missing"
@@ -14,13 +14,13 @@ images = valid_images+["img3.png"]
 
 def mock_listdir(folder):
     if (folder == gallery_folder):
-        return [REQUIRED_GALLERY_FOLDER_SMALL, REQUIRED_GALLERY_FOLDER_IMAGES, REQUIRED_GALLERY_FILE_GALLERY]
+        return [GALLERY_FOLDER_SMALL, GALLERY_FOLDER_IMAGES, GALLERY_FILE_GALLERY]
     elif (folder == no_gallery_folder_small_missing):
-        return [REQUIRED_GALLERY_FOLDER_IMAGES, REQUIRED_GALLERY_FILE_GALLERY]
+        return [GALLERY_FOLDER_IMAGES, GALLERY_FILE_GALLERY]
     elif (folder == no_gallery_folder_images_missing):
-        return [REQUIRED_GALLERY_FOLDER_SMALL, REQUIRED_GALLERY_FILE_GALLERY]
+        return [GALLERY_FOLDER_SMALL, GALLERY_FILE_GALLERY]
     elif (folder == no_gallery_folder_file_gallery_missing):
-        return [REQUIRED_GALLERY_FOLDER_IMAGES, REQUIRED_GALLERY_FOLDER_SMALL]
+        return [GALLERY_FOLDER_IMAGES, GALLERY_FOLDER_SMALL]
     else:  # images_folder
         return images
 
@@ -30,10 +30,6 @@ class TestGalleryImageElement(unittest.TestCase):
 
     def test_is_gallery_path(self):
         self.assertEqual(is_gallery_path(gallery_folder), True)
-
-    def test_is_gallery_path_folder_missing(self):
-        self.assertEqual(is_gallery_path(
-            no_gallery_folder_small_missing), False)
 
     def test_is_gallery_path_images_missing(self):
         self.assertEqual(is_gallery_path(

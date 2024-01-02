@@ -5,8 +5,8 @@ from .gallery_tools import get_list_of_supported_images_in_folder
 from .gallery_xml_tools import extract_filename_from_image_element, read_gallery_xml, parse_gallery_xml, \
     print_images_list, create_image_element, write_formatted_xml, get_image_element_filenames_list, \
     get_images_element, update_image_description
-from .gallery_configuration import REQUIRED_GALLERY_FILE_GALLERY, \
-    REQUIRED_GALLERY_FOLDER_IMAGES
+from .gallery_configuration import GALLERY_FILE_GALLERY, \
+    GALLERY_FOLDER_IMAGES
 
 
 class GalleryXmlUpdater:
@@ -28,10 +28,10 @@ class GalleryXmlUpdater:
             if image_name in superfluous_gallery_elements:
                 print(f"\n{image_name}:")
                 response = input(
-                    f"-> Image is present in {REQUIRED_GALLERY_FILE_GALLERY}, but not in {REQUIRED_GALLERY_FOLDER_IMAGES}. Shall it be removed from {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
+                    f"-> Image is present in {GALLERY_FILE_GALLERY}, but not in {GALLERY_FOLDER_IMAGES}. Shall it be removed from {GALLERY_FILE_GALLERY}? (yes/no) ")
                 if response in ("yes", "y"):
                     print(
-                        f"-> Removing image {image_name} from {REQUIRED_GALLERY_FILE_GALLERY}")
+                        f"-> Removing image {image_name} from {GALLERY_FILE_GALLERY}")
                     xml_image_elements_to_remove.append(image_element)
                 response = input(
                         f"\nDo you want to continue with the next image? (yes/no) ")
@@ -47,14 +47,14 @@ class GalleryXmlUpdater:
         for image_name in missing_gallery_elements:
             print(f"\n{image_name}:")
             response = input(
-                f"-> Image is present in {REQUIRED_GALLERY_FOLDER_IMAGES}, but not in {REQUIRED_GALLERY_FILE_GALLERY}. Shall it be removed from {REQUIRED_GALLERY_FOLDER_IMAGES}? (yes/no) ")
+                f"-> Image is present in {GALLERY_FOLDER_IMAGES}, but not in {GALLERY_FILE_GALLERY}. Shall it be removed from {GALLERY_FOLDER_IMAGES}? (yes/no) ")
             if response in ("yes", "y"):
                 print(
-                    f"-> Removing image {image_name} from {REQUIRED_GALLERY_FOLDER_IMAGES}")
+                    f"-> Removing image {image_name} from {GALLERY_FOLDER_IMAGES}")
                 remove(path.join(self.__images_path, image_name))
             else:
                 response = input(
-                    f"-> Shall it instead be created inside {REQUIRED_GALLERY_FILE_GALLERY}? (yes/no) ")
+                    f"-> Shall it instead be created inside {GALLERY_FILE_GALLERY}? (yes/no) ")
                 if response in ("yes", "y"): 
                     new_xml_image_element = create_image_element(image_name)
                     update_image_description(new_xml_image_element, image_name, self.__update_image_callback)

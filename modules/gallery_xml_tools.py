@@ -2,7 +2,7 @@ from os import path
 import xml.etree.ElementTree as XmlEt
 from collections.abc import Callable
 from .gallery_configuration import GALLERY_XML_IMAGES_TAG, GALLERY_XML_IMAGES_ALT_TAG, \
-    GALLERY_XML_IMAGES_ALTDE_TAG, REQUIRED_GALLERY_FILE_GALLERY, GALLERY_XML_IMAGES_FILENAME_TAG, \
+    GALLERY_XML_IMAGES_ALTDE_TAG, GALLERY_FILE_GALLERY, GALLERY_XML_IMAGES_FILENAME_TAG, \
     GALLERY_XML_IMAGES_CAPTION_TAG, GALLERY_XML_IMAGES_PRINTS_TAG, GALLERY_XML_CONTENT_TAG, \
     GALLERY_XML_INFO_TAG, GALLERY_XML_INFODE_TAG
 
@@ -16,7 +16,7 @@ IMAGE_ELEMENT_BLUEPRINT = f'''<image>
 
 
 def read_gallery_xml(folder: str) -> str:
-    with open(path.join(folder, REQUIRED_GALLERY_FILE_GALLERY), encoding="utf-8") as f:
+    with open(path.join(folder, GALLERY_FILE_GALLERY), encoding="utf-8") as f:
         contents = f.read()
     return contents
 
@@ -183,6 +183,6 @@ def update_gallery_description(info_en: XmlEt.Element, info_de: XmlEt.Element):
 
 def write_formatted_xml(gallery_element: XmlEt.Element, gallery_folder: str):
     """Write a formatted Gallery XML"""
-    xml_gallery_path = path.join(gallery_folder, REQUIRED_GALLERY_FILE_GALLERY)
+    xml_gallery_path = path.join(gallery_folder, GALLERY_FILE_GALLERY)
     XmlEt.indent(gallery_element)
     XmlEt.ElementTree(gallery_element).write(xml_gallery_path, encoding="utf-8")

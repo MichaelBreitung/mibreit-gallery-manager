@@ -1,6 +1,6 @@
 from os import path, listdir, getcwd
-from .gallery_configuration import REQUIRED_GALLERY_ELEMENTS, REQUIRED_GALLERY_FOLDER_IMAGES, \
-    REQUIRED_GALLERY_FOLDER_SMALL
+from .gallery_configuration import REQUIRED_GALLERY_ELEMENTS, GALLERY_FOLDER_IMAGES, \
+    GALLERY_FOLDER_SMALL, GALLERY_FOLDER_MEDIUM
 
 SUPPORTED_IMAGE_FORMATS = (".jpg", ".jpeg")
 
@@ -35,9 +35,13 @@ def get_valid_path(folder: str) -> str:
 
 def get_images_path(folder: str) -> str:
     """Returns images path within given gallery folder"""
-    return path.join(folder, REQUIRED_GALLERY_FOLDER_IMAGES)
+    return path.join(folder, GALLERY_FOLDER_IMAGES)
 
 
 def get_thumbs_path(folder: str) -> str:
     """Returns thumbs path within given gallery folder"""
-    return path.join(folder, REQUIRED_GALLERY_FOLDER_SMALL)
+    return path.join(folder, GALLERY_FOLDER_SMALL)
+
+def get_medium_path(folder: str) -> str:
+    """Returns medium path within given gallery folder"""
+    return path.join(folder, GALLERY_FOLDER_MEDIUM)

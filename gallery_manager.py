@@ -1,12 +1,12 @@
 """Module used to parse command line arguments"""
 import argparse
 import os
-from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_path, get_thumbs_path
+from modules.gallery_tools import is_gallery_path, get_valid_path, get_images_path, get_thumbs_path, get_medium_path
 from modules.gallery_exif_tool import GalleryExifUpdate, read_configuration
 from modules.gallery_xml_tools import parse_gallery_xml, update_image_descriptions, get_images_element, \
     write_formatted_xml, read_gallery_xml, update_gallery_description, get_info_element
-from modules.gallery_xml_updater import GalleryXmlUpdater, REQUIRED_GALLERY_FILE_GALLERY
-from modules.gallery_thumb_updater import *
+from modules.gallery_xml_updater import GalleryXmlUpdater, GALLERY_FILE_GALLERY
+from modules.gallery_variants_updater import *
 from modules.gallery_create import GalleryCreator
 
 
@@ -14,16 +14,18 @@ def synchronize_gallery(folder: str, exif_updater: GalleryExifUpdate):
     print("\nSynchronizing gallery -> ", folder)
     images_path = get_images_path(folder)
     thumbs_path = get_thumbs_path(folder)
+    medium_path = get_medium_path(folder)
 
     def update_image_callback(image_name, image_title, image_description):
         exif_updater.update(
             images_path, image_name, image_title, image_description)
 
     if GalleryXmlUpdater(images_path, folder, update_image_callback).update() is True:
-        GalleryThumbUpdater(images_path, thumbs_path).update()
+        GalleryVariantsUpdater(images_path, thumbs_path).update()
+        GalleryVariantsUpdater(images_path, medium_path, False).update()
     else:
         print(
-            f"Invalid Gallery under {path}. The {REQUIRED_GALLERY_FILE_GALLERY} is invalid.")
+            f"Invalid Gallery under {path}. The {GALLERY_FILE_GALLERY} is invalid.")
 
 
 def synchronize_galleries_in_folder(folder: str, exif_updater: GalleryExifUpdate) -> None:
@@ -57,7 +59,7 @@ def update_image_descriptions_in_folder(folder: str, exif_updater: GalleryExifUp
 
             write_formatted_xml(xml_gallery_tree, folder)
         else:
-            print(f"Exception: parsing of {REQUIRED_GALLERY_FILE_GALLERY} failed for \
+            print(f"Exception: parsing of {GALLERY_FILE_GALLERY} failed for \
                 {folder}")
     else:
         for folder_element in os.scandir(folder):
