@@ -3,8 +3,7 @@ GALLERY_FOLDER_IMAGES = "images"
 GALLERY_FOLDER_SMALL = "small"
 GALLERY_FOLDER_MEDIUM = "medium"
 GALLERY_FILE_GALLERY = "gallery.xml"
-REQUIRED_GALLERY_ELEMENTS = {GALLERY_FILE_GALLERY,
-                             GALLERY_FOLDER_IMAGES}
+REQUIRED_GALLERY_ELEMENTS = {GALLERY_FILE_GALLERY, GALLERY_FOLDER_IMAGES}
 
 GALLERY_XML_IMAGES_TAG = "images"
 GALLERY_XML_IMAGES_FILENAME_TAG = "filename"
@@ -28,11 +27,22 @@ CONFIG_CREDIT = "credit"
 CONFIG_CREDIT_SHORT = "credit_short"
 CONFIG_USAGE_TERMS = "usage_terms"
 
-IMAGE_METADATA_GROUPS_TO_KEEP = ["SourceFile", "ExifTool",
-                                 "File", "ICC_Profile", "Composite", "APP14"]
+IMAGE_METADATA_GROUPS_TO_KEEP = [
+    "SourceFile",
+    "ExifTool",
+    "File",
+    "ICC_Profile",
+    "Composite",
+    "APP14",
+]
 
-IMAGE_METADATA_TAGS_TO_KEEP = ["SourceFile", "ExifToolVersion",
-                               "Title", "Description", "ImageDescription"]
+IMAGE_METADATA_TAGS_TO_KEEP = [
+    "SourceFile",
+    "ExifToolVersion",
+    "Title",
+    "Description",
+    "ImageDescription",
+]
 
 CONFIG_EXIF_MAPPING = {
     CONFIG_CREATOR_NAME: ["Creator", "ImageCreatorName", "CopyrightOwnerName"],
@@ -45,14 +55,14 @@ CONFIG_EXIF_MAPPING = {
     CONFIG_LICENSOR_URL: "LicensorURL",
     CONFIG_LICENSOR_EMAIL: "LicensorEmail",
     CONFIG_LICENSOR_NAME: "LicensorName",
-    CONFIG_WEB_STATEMENT: "WebStatement"
+    CONFIG_WEB_STATEMENT: "WebStatement",
 }
 
 
 def remove_group_from_tag(tag: str) -> str:
     group_end = tag.rfind(":")
     if group_end != -1:
-        return tag[(group_end+1):]
+        return tag[(group_end + 1) :]
     return tag
 
 

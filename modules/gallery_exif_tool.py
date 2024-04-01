@@ -2,7 +2,11 @@ from os import path
 import subprocess
 import platform
 import json
-from .gallery_configuration import CONFIG_EXIF_MAPPING, IMAGE_METADATA_GROUPS_TO_KEEP, IMAGE_METADATA_TAGS_TO_KEEP
+from .gallery_configuration import (
+    CONFIG_EXIF_MAPPING,
+    IMAGE_METADATA_GROUPS_TO_KEEP,
+    IMAGE_METADATA_TAGS_TO_KEEP,
+)
 
 
 def read_configuration(config_path: str) -> dict[str, str] | None:
@@ -22,7 +26,7 @@ class GalleryExifUpdate:
     def __init__(self, settings: dict[str, str] | None = None):
         platform_name = platform.system()
 
-        if platform_name == 'Windows':
+        if platform_name == "Windows":
             self.__exif_tool_executable = "exiftool.exe"
             if path.exists("exiftool.exe"):
                 self.__has_executable = True
@@ -36,10 +40,12 @@ class GalleryExifUpdate:
                     if isinstance(v, list):
                         for element in v:
                             self.__exif_tool_params_from_settings.append(
-                                f"-{element}={settings[k]}")
+                                f"-{element}={settings[k]}"
+                            )
                     else:
                         self.__exif_tool_params_from_settings.append(
-                            f"-{v}={settings[k]}")
+                            f"-{v}={settings[k]}"
+                        )
 
     def __get_tags_to_remove(self, exif_data: dict[str, str]):
         remove = []
@@ -55,7 +61,9 @@ class GalleryExifUpdate:
                     remove.append(group_tag)
         return remove
 
-    def update(self, images_folder: str, image_name: str, caption: str, description: str):
+    def update(
+        self, images_folder: str, image_name: str, caption: str, description: str
+    ):
         image_path = path.join(images_folder, image_name)
         if self.__has_executable and path.exists(image_path):
             exif_tool_execute = [self.__exif_tool_executable]
@@ -68,12 +76,13 @@ class GalleryExifUpdate:
             # TODO: instad of multiple blocking run calls, keep process open use stdin and stdout
             # to control it
             return_value = subprocess.run(
-                [self.__exif_tool_executable, "-j", "-groupHeadings", image_path], capture_output=True)
+                [self.__exif_tool_executable, "-j", "-groupHeadings", image_path],
+                capture_output=True,
+            )
             exif_data = json.loads(return_value.stdout.decode())
             tags_to_remove = self.__get_tags_to_remove(exif_data[0])
             if len(tags_to_remove):
-                exif_tool_execute.extend(
-                    [f"-{tag}=" for tag in tags_to_remove])
+                exif_tool_execute.extend([f"-{tag}=" for tag in tags_to_remove])
 
             exif_tool_execute.append(image_path)
             subprocess.run(exif_tool_execute)

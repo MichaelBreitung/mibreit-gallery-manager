@@ -4,10 +4,21 @@ from .gallery_thumb_creator import GalleryThumbCreator
 from .gallery_variant_creator import GalleryVariantCreator
 from .gallery_configuration import MEDIUM_QUALITY, MEDIUM_SHARPEN_FACTOR, MEDIUM_WIDTH
 
+
 class GalleryVariantsUpdater:
 
     def __init__(self, images_path: str, variant_path: str, is_thumb: bool = True):
-        self.__variant_creator = GalleryThumbCreator(images_path, variant_path) if is_thumb else GalleryVariantCreator(images_path, variant_path, MEDIUM_WIDTH, MEDIUM_SHARPEN_FACTOR, MEDIUM_QUALITY)
+        self.__variant_creator = (
+            GalleryThumbCreator(images_path, variant_path)
+            if is_thumb
+            else GalleryVariantCreator(
+                images_path,
+                variant_path,
+                MEDIUM_WIDTH,
+                MEDIUM_SHARPEN_FACTOR,
+                MEDIUM_QUALITY,
+            )
+        )
         images_list = get_list_of_supported_images_in_folder(images_path)
         os.makedirs(variant_path, exist_ok=True)
         variant_images_list = get_list_of_supported_images_in_folder(variant_path)
