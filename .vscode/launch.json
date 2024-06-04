@@ -6,12 +6,12 @@
   "configurations": [
     {
       "name": "Python: Current File",
-      "type": "python",
+      "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/gallery_manager.py",
       "console": "integratedTerminal",
       "justMyCode": true,
-      "args": ["-i", "./test"]
+      "args": ["-i", "./Laos", "-d", "-c", "example_config.json"]
     }
   ]
 }
