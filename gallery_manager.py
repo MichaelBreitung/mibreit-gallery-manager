@@ -20,7 +20,7 @@ from modules.gallery_xml_tools import (
     get_info_element,
 )
 from modules.gallery_xml_updater import GalleryXmlUpdater, GALLERY_FILE_GALLERY
-from modules.gallery_variants_updater import *
+from modules.gallery_variants_updater import GalleryVariantsUpdater
 from modules.gallery_create import GalleryCreator
 
 
@@ -37,7 +37,7 @@ def synchronize_gallery(folder: str, exif_updater: GalleryExifUpdate):
         GalleryVariantsUpdater(images_path, thumbs_path).update()
         GalleryVariantsUpdater(images_path, medium_path, False).update()
     else:
-        print(f"Invalid Gallery under {path}. The {GALLERY_FILE_GALLERY} is invalid.")
+        print(f"Invalid Gallery under {folder}. The {GALLERY_FILE_GALLERY} is invalid.")
 
 
 def synchronize_galleries_in_folder(
@@ -91,50 +91,51 @@ def create_new_gallery_in_folder(folder: str) -> None:
     GalleryCreator(folder).create()
 
 
-# Start of Main Program
-parser = argparse.ArgumentParser("mibreit-gallery-manager")
-parser.add_argument(
-    "-i",
-    "--input",
-    required=True,
-    type=str,
-    help="The folder in which the galleries are located. \
-                        Recursion will be used to find all individual galleries.",
-)
-parser.add_argument(
-    "-d",
-    "--description",
-    default=False,
-    action=argparse.BooleanOptionalAction,
-    help="Add this flag, to update the descriptions of the photos \
-                        within the input galleries.",
-)
-parser.add_argument(
-    "-n",
-    "--new",
-    default=False,
-    action=argparse.BooleanOptionalAction,
-    help="Add this flag, to create a new, empty gallery within the input \
-                        galleries folder.",
-)
-parser.add_argument(
-    "-c", "--config", type=str, required=False, help="Path to config file (json)"
-)
+def update_gallery_main():
+    parser = argparse.ArgumentParser("mibreit-gallery-manager")
+    parser.add_argument(
+        "-i",
+        "--input",
+        required=True,
+        type=str,
+        help="The folder in which the galleries are located. \
+                            Recursion will be used to find all individual galleries.",
+    )
+    parser.add_argument(
+        "-d",
+        "--description",
+        default=False,
+        action=argparse.BooleanOptionalAction,
+        help="Add this flag, to update the descriptions of the photos \
+                            within the input galleries.",
+    )
+    parser.add_argument(
+        "-n",
+        "--new",
+        default=False,
+        action=argparse.BooleanOptionalAction,
+        help="Add this flag, to create a new, empty gallery within the input \
+                            galleries folder.",
+    )
+    parser.add_argument(
+        "-c", "--config", type=str, required=False, help="Path to config file (json)"
+    )
+    cmd_args = parser.parse_args()
+
+    config = None
+    if cmd_args.config:
+        config = read_configuration(cmd_args.config)
+
+    gallery_exif_update = GalleryExifUpdate(config)
+
+    path: str = get_valid_path(cmd_args.input)  # type: ignore
+
+    if cmd_args.new:
+        create_new_gallery_in_folder(path)  # type: ignore
+    elif cmd_args.description:
+        update_image_descriptions_in_folder(path, gallery_exif_update)  # type: ignore
+    else:
+        synchronize_galleries_in_folder(path, gallery_exif_update)  # type: ignore
 
 
-cmd_args = parser.parse_args()
-config = None
-
-if cmd_args.config:
-    config = read_configuration(cmd_args.config)
-
-gallery_exif_update = GalleryExifUpdate(config)
-
-path: str = get_valid_path(cmd_args.input)  # type: ignore
-
-if cmd_args.new:
-    create_new_gallery_in_folder(path)  # type: ignore
-elif cmd_args.description:
-    update_image_descriptions_in_folder(path, gallery_exif_update)  # type: ignore
-else:
-    synchronize_galleries_in_folder(path, gallery_exif_update)  # type: ignore
+update_gallery_main()
