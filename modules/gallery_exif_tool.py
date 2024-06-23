@@ -1,4 +1,5 @@
 from os import path
+import shutil
 import subprocess
 import platform
 import json
@@ -19,7 +20,7 @@ def read_configuration(config_path: str) -> dict[str, str] | None:
 
 
 class GalleryExifUpdate:
-    __exif_tool_executable: str = "./exiftool"
+    __exif_tool_executable: str = "exiftool"
     __exif_tool_params_from_settings: list[str] = []
     __has_executable: bool = False
 
@@ -31,7 +32,7 @@ class GalleryExifUpdate:
             if path.exists("exiftool.exe"):
                 self.__has_executable = True
         else:
-            if path.exists("exiftool"):
+            if shutil.which("exiftool"):
                 self.__has_executable = True
 
         if settings is not None:
